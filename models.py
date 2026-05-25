@@ -12,6 +12,6 @@ class Categoria(BaseModel):
     nombre: str
 
 
-class Tipo_Piel(BaseModel):
+class TipoPiel(BaseModel):
     nombre: str
     descripcion: str
