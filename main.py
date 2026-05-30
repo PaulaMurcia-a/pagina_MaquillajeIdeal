@@ -82,3 +82,118 @@ def home(request: Request):
             "pieles": pieles
         }
     )
+
+@app.get("/productos")
+def listar():
+    return get_productos()
+
+
+@app.get("/productos/{producto_id}")
+def obtener(producto_id: int):
+    producto = get_producto_by_id(producto_id)
+
+    if not producto:
+        raise HTTPException(
+            status_code=404,
+            detail="Producto no encontrado"
+        )
+
+    return producto
+
+
+@app.post("/productos", status_code=201)
+def crear(producto: Producto):
+
+    try:
+
+        new_id = create_producto(producto)
+
+        return {
+            "mensaje": "Producto creado",
+            "id": new_id
+        }
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
+@app.put("/productos/{producto_id}")
+def actualizar(producto_id: int, producto: Producto):
+
+    if not update_producto(producto_id, producto):
+
+        raise HTTPException(
+            status_code=404,
+            detail="Producto no encontrado"
+        )
+
+    return {
+        "mensaje": "Producto actualizado"
+    }
+
+
+@app.delete("/productos/{producto_id}")
+def eliminar(producto_id: int):
+
+    if not delete_producto(producto_id):
+
+        raise HTTPException(
+            status_code=404,
+            detail="Producto no encontrado"
+        )
+
+    return {
+        "mensaje": "Producto desactivado"
+    }
+
+
+@app.put("/productos/{producto_id}/estado")
+def cambiar_estado(producto_id: int, estado: str):
+
+    resultado = cambiar_estado_producto(
+        producto_id,
+        estado
+    )
+
+    if resultado == "no_encontrado":
+
+        raise HTTPException(
+            status_code=404,
+            detail="Producto no encontrado"
+        )
+
+    if resultado == "invalido":
+
+        raise HTTPException(
+            status_code=400,
+            detail="Estado inválido. Use activo o inactivo"
+        )
+
+    if resultado == "igual":
+
+        return {
+            "mensaje": f"El producto ya está {estado}"
+        }
+
+    return {
+        "mensaje": f"Estado cambiado a {estado}"
+    }
+
+@app.get("/productos/piel/{tipo_piel_id}")
+def filtrar_piel(tipo_piel_id: int):
+    return recomendar_productos(tipo_piel_id)
+
+
+@app.get("/productos/marca/")
+def filtrar(marca: str = None):
+    return filtrar_productos(marca=marca)
+
+
+@app.get("/productos/buscar/")
+def buscar(nombre: str):
+    return filtrar_productos(nombre=nombre)
+
