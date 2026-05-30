@@ -82,7 +82,19 @@ def home(request: Request):
             "pieles": pieles
         }
     )
+@app.get("/catalogo",
+         response_class=HTMLResponse)
+def catalogo(request: Request):
 
+    productos = get_productos()
+
+    return templates.TemplateResponse(
+        "catalogo.html",
+        {
+            "request": request,
+            "productos": productos
+        }
+    )
 @app.get("/productos")
 def listar():
     return get_productos()
