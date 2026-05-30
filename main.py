@@ -197,3 +197,121 @@ def filtrar(marca: str = None):
 def buscar(nombre: str):
     return filtrar_productos(nombre=nombre)
 
+@app.get("/tipos_piel")
+def listar_tipos_piel():
+    return get_tipos_piel()
+
+
+@app.get("/tipos_piel/nombre/")
+def buscar_tipo(nombre: str):
+    return buscar_tipo_piel(nombre)
+
+
+@app.post("/tipos_piel", status_code=201)
+def crear_tipo(tipo: TipoPiel):
+
+    new_id = create_tipo_piel(
+        tipo.dict()
+    )
+
+    return {
+        "mensaje": "Tipo de piel creado",
+        "id": new_id
+    }
+
+
+@app.put("/tipos_piel/{tipo_id}")
+def actualizar_tipo(tipo_id: int, tipo: TipoPiel):
+
+    if not update_tipo_piel(
+        tipo_id,
+        tipo.dict()
+    ):
+
+        raise HTTPException(
+            status_code=404,
+            detail="No encontrado"
+        )
+
+    return {
+        "mensaje": "Actualizado"
+    }
+
+
+@app.delete("/tipos_piel/{tipo_id}")
+def eliminar_tipo(tipo_id: int):
+
+    if not delete_tipo_piel(tipo_id):
+
+        raise HTTPException(
+            status_code=404,
+            detail="No encontrado"
+        )
+
+    return {
+        "mensaje": "Eliminado"
+    }
+
+@app.get("/categorias")
+def listar_categorias():
+    return get_categorias()
+
+
+@app.get("/categorias/buscar/")
+def buscar_cat(nombre: str):
+    return buscar_categoria(nombre)
+
+
+@app.post("/categorias", status_code=201)
+def crear_categoria(categoria: Categoria):
+
+    try:
+
+        new_id = create_categoria(
+            categoria.dict()
+        )
+
+        return {
+            "mensaje": "Categoría creada",
+            "id": new_id
+        }
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+
+@app.put("/categorias/{cat_id}")
+def actualizar_categoria(cat_id: int, categoria: Categoria):
+
+    if not update_categoria(
+        cat_id,
+        categoria.dict()
+    ):
+
+        raise HTTPException(
+            status_code=404,
+            detail="No encontrada"
+        )
+
+    return {
+        "mensaje": "Actualizada"
+    }
+
+
+@app.delete("/categorias/{cat_id}")
+def eliminar_categoria(cat_id: int):
+
+    if not delete_categoria(cat_id):
+
+        raise HTTPException(
+            status_code=404,
+            detail="No encontrada"
+        )
+
+    return {
+        "mensaje": "Eliminada"
+    }
