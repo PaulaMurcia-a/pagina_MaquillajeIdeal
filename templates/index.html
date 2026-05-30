@@ -19,6 +19,25 @@
 
 </header>
 
+<section class="buscador">
+
+    <form action="/productos/buscar" method="get">
+
+        <input
+            type="text"
+            name="nombre"
+            placeholder="Buscar producto..."
+            required
+        >
+
+        <button type="submit">
+            Buscar
+        </button>
+
+    </form>
+
+</section>
+
 <section class="hero">
 
     <h2>Descubre tu tipo de piel ✨</h2>
@@ -31,3 +50,202 @@
     <button class="btn">
         Explorar
     </button>
+    </section>
+
+<section class="pieles">
+
+    <h2>Tipos de Piel</h2>
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <img
+                src="/static/img/piel-sensible.png"
+                alt="Piel Sensible"
+            >
+
+            <h3>Piel Sensible</h3>
+
+            <p>
+                Enrojecimiento en mejillas y frente,
+                pequeñas rojeces e irritación.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <img
+                src="/static/img/piel-seca.png"
+                alt="Piel Seca"
+            >
+
+            <h3>Piel Seca</h3>
+
+            <p>
+                Descamación en mejillas y sensación
+                de tirantez. Se observan zonas ásperas.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <img
+                src="/static/img/piel-grasosa.png"
+                alt="Piel Grasosa"
+            >
+
+            <h3>Piel Grasosa</h3>
+
+            <p>
+                Brillo visible en frente, nariz y mentón.
+                Poros dilatados e imperfecciones.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <img
+                src="/static/img/piel-mixta.png"
+                alt="Piel Mixta"
+            >
+
+            <h3>Piel Mixta</h3>
+
+            <p>
+                Brillo en la zona T y zonas más secas
+                en las mejillas.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <img
+                src="/static/img/piel-normal.png"
+                alt="Piel Normal"
+            >
+
+            <h3>Piel Normal</h3>
+
+            <p>
+                Piel equilibrada, sin brillo excesivo
+                ni resequedad. Textura suave y uniforme.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="test">
+
+    <h2>Test rápido de piel</h2>
+
+    <form>
+
+        <label>
+            ¿Cómo notas tu piel durante el día?
+        </label>
+
+        <select>
+
+            <option>Seleccione una opción</option>
+
+            <option>
+                Se enrojece fácilmente
+            </option>
+
+            <option>
+                Se siente tirante
+            </option>
+
+            <option>
+                Tiene mucho brillo
+            </option>
+
+            <option>
+                Brillo en la zona T
+            </option>
+
+            <option>
+                Se ve equilibrada
+            </option>
+
+        </select>
+
+        <button type="submit">
+            Analizar
+        </button>
+
+    </form>
+
+</section>
+
+<section class="dashboard">
+
+    <h2>
+        Estadísticas de Tipos de Piel
+    </h2>
+
+    <canvas id="grafica"></canvas>
+
+</section>
+
+<footer>
+
+    <p>
+        Beauty Ideal © 2026
+    </p>
+
+</footer>
+
+<script src="/static/script.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx =
+document.getElementById('grafica');
+
+new Chart(ctx,{
+
+    type:'pie',
+
+    data:{
+        labels:[
+            'Sensible',
+            'Seca',
+            'Grasosa',
+            'Mixta',
+            'Normal'
+        ],
+
+        datasets:[{
+
+            data:[
+                15,
+                10,
+                20,
+                12,
+                8
+            ]
+
+        }]
+    }
+
+});
+
+</script>
+</body>
+</html>
