@@ -180,3 +180,37 @@ footer{
     }
 
 }
+
+.buscador{
+    padding:30px;
+    text-align:center;
+}
+
+.buscador input{
+    width:300px;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+.buscador button{
+    padding:12px 20px;
+    background:#d64d92;
+    color:white;
+    border:none;
+    border-radius:10px;
+}
+
+.dashboard{
+    background:white;
+    margin:40px;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+.dashboard h2{
+    text-align:center;
+    color:#7d4ed8;
+}
+
