@@ -76,9 +76,8 @@ def home(request: Request):
     ]
 
     return templates.TemplateResponse(
-        request=request,
-        name="index.html",
-        context={
+        "index.html",
+        {
             "request": request,
             "pieles": pieles
         }
