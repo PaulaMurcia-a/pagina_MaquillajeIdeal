@@ -76,8 +76,9 @@ def home(request: Request):
     ]
 
     return templates.TemplateResponse(
-        "index.html",
-        {
+        request=request,
+        name="index.html",
+        context={
             "request": request,
             "pieles": pieles
         }
@@ -89,8 +90,9 @@ def catalogo(request: Request):
     productos = get_productos()
 
     return templates.TemplateResponse(
-        "catalogo.html",
-        {
+        request=request,
+        name="catalogo.html",
+        context={
             "request": request,
             "productos": productos
         }
