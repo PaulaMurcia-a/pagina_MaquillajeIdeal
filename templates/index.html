@@ -4,248 +4,217 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beauty Ideal</title>
-
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        nav {
+            background: #fff;
+            border-bottom: 2px solid #f7c5d5;
+            padding: 0.7rem 2rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        nav a {
+            text-decoration: none;
+            color: #c0446a;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+        nav a:hover, nav a.active { background: #fce4ec; }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.open { display:flex; }
+        .modal { background:#fff; border-radius:16px; padding:2rem; width:90%; max-width:480px; box-shadow:0 8px 32px rgba(192,68,106,0.18); position:relative; }
+        .modal h2 { color:#c0446a; margin-bottom:1.2rem; font-size:1.3rem; }
+        .modal-close { position:absolute; top:1rem; right:1.2rem; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#888; }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; font-size:.85rem; font-weight:600; color:#555; margin-bottom:.3rem; }
+        .form-group input, .form-group select { width:100%; padding:.6rem .9rem; border:1.5px solid #f7c5d5; border-radius:8px; font-size:.95rem; outline:none; box-sizing:border-box; }
+        .form-group input:focus, .form-group select:focus { border-color:#c0446a; }
+        .btn-primary { background:#c0446a; color:#fff; border:none; padding:.7rem 2rem; border-radius:25px; font-size:1rem; font-weight:600; cursor:pointer; width:100%; }
+        .btn-primary:hover { background:#a0305a; }
+        #msg-resultado { margin-top:.8rem; font-size:.9rem; text-align:center; min-height:1.2rem; }
+        .msg-ok { color:#2e7d32; } .msg-err { color:#c62828; }
+        #resultado-test { margin-top:1rem; padding:.8rem 1.2rem; border-radius:10px; background:#fce4ec; color:#c0446a; font-weight:600; display:none; }
+    </style>
 </head>
 <body>
 
+<nav>
+    <a href="/" class="active">Inicio</a>
+    <a href="/catalogo">🛍 Catálogo</a>
+    <a href="#" id="btn-abrir-modal">➕ Nuevo Producto</a>
+</nav>
+
 <header>
-
-    <h1> Beauty Ideal</h1>
-
-    <p>
-        Encuentra el maquillaje ideal para tu tipo de piel
-    </p>
-
+    <h1>Beauty Ideal</h1>
+    <p>Encuentra el maquillaje ideal para tu tipo de piel</p>
 </header>
 
 <section class="buscador">
-
-    <form action="/productos/buscar" method="get">
-
-        <input
-            type="text"
-            name="nombre"
-            placeholder="Buscar producto..."
-            required
-        >
-
-        <button type="submit">
-            Buscar
-        </button>
-
+    <form action="/catalogo" method="get">
+        <input type="text" name="buscar" placeholder="Buscar producto...">
+        <button type="submit">Buscar</button>
     </form>
-
 </section>
 
 <section class="hero">
-
     <h2>Descubre tu tipo de piel ✨</h2>
-
-    <p>
-        Aprende a reconocer las características de tu piel y encuentra
-        los productos ideales para tu rutina de maquillaje y cuidado facial.
-    </p>
-
-    <button class="btn">
-        Explorar
-    </button>
-    </section>
+    <p>Aprende a reconocer las características de tu piel y encuentra los productos ideales para tu rutina de maquillaje y cuidado facial.</p>
+    <a href="/catalogo" class="btn" style="display:inline-block;text-decoration:none;">Explorar Catálogo</a>
+</section>
 
 <section class="pieles">
-
     <h2>Tipos de Piel</h2>
-
     <div class="cards">
-
-
         <div class="card">
-
-            <img
-                src="/static/img/piel-sensible.png"
-                alt="Piel Sensible"
-            >
-
+            <img src="/static/img/piel-sensible.png" alt="Piel Sensible">
             <h3>Piel Sensible</h3>
-
-            <p>
-                Enrojecimiento en mejillas y frente,
-                pequeñas rojeces e irritación.
-            </p>
-
+            <p>Enrojecimiento en mejillas y frente, pequeñas rojeces e irritación.</p>
         </div>
-
-
         <div class="card">
-
-            <img
-                src="/static/img/piel-seca.png"
-                alt="Piel Seca"
-            >
-
+            <img src="/static/img/piel-seca.png" alt="Piel Seca">
             <h3>Piel Seca</h3>
-
-            <p>
-                Descamación en mejillas y sensación
-                de tirantez. Se observan zonas ásperas.
-            </p>
-
+            <p>Descamación en mejillas y sensación de tirantez. Se observan zonas ásperas.</p>
         </div>
-
-
         <div class="card">
-
-            <img
-                src="/static/img/piel-grasosa.png"
-                alt="Piel Grasosa"
-            >
-
+            <img src="/static/img/piel-grasosa.png" alt="Piel Grasosa">
             <h3>Piel Grasosa</h3>
-
-            <p>
-                Brillo visible en frente, nariz y mentón.
-                Poros dilatados e imperfecciones.
-            </p>
-
+            <p>Brillo visible en frente, nariz y mentón. Poros dilatados e imperfecciones.</p>
         </div>
-
-
         <div class="card">
-
-            <img
-                src="/static/img/piel-mixta.png"
-                alt="Piel Mixta"
-            >
-
+            <img src="/static/img/piel-mixta.png" alt="Piel Mixta">
             <h3>Piel Mixta</h3>
-
-            <p>
-                Brillo en la zona T y zonas más secas
-                en las mejillas.
-            </p>
-
+            <p>Brillo en la zona T y zonas más secas en las mejillas.</p>
         </div>
-
-
         <div class="card">
-
-            <img
-                src="/static/img/piel-normal.png"
-                alt="Piel Normal"
-            >
-
+            <img src="/static/img/piel-normal.png" alt="Piel Normal">
             <h3>Piel Normal</h3>
-
-            <p>
-                Piel equilibrada, sin brillo excesivo
-                ni resequedad. Textura suave y uniforme.
-            </p>
-
+            <p>Piel equilibrada, sin brillo excesivo ni resequedad. Textura suave y uniforme.</p>
         </div>
-
     </div>
-
 </section>
 
 <section class="test">
-
     <h2>Test rápido de piel</h2>
-
-    <form>
-
-        <label>
-            ¿Cómo notas tu piel durante el día?
-        </label>
-
-        <select>
-
-            <option>Seleccione una opción</option>
-
-            <option>
-                Se enrojece fácilmente
-            </option>
-
-            <option>
-                Se siente tirante
-            </option>
-
-            <option>
-                Tiene mucho brillo
-            </option>
-
-            <option>
-                Brillo en la zona T
-            </option>
-
-            <option>
-                Se ve equilibrada
-            </option>
-
+    <form id="form-test">
+        <label>¿Cómo notas tu piel durante el día?</label>
+        <select id="select-piel">
+            <option value="">Seleccione una opción</option>
+            <option value="Sensible">Se enrojece fácilmente</option>
+            <option value="Seca">Se siente tirante</option>
+            <option value="Grasosa">Tiene mucho brillo</option>
+            <option value="Mixta">Brillo en la zona T</option>
+            <option value="Normal">Se ve equilibrada</option>
         </select>
-
-        <button type="submit">
-            Analizar
-        </button>
-
+        <button type="submit" class="btn" style="margin-top:1rem;">Analizar</button>
     </form>
-
+    <div id="resultado-test"></div>
 </section>
 
 <section class="dashboard">
-
-    <h2>
-        Estadísticas de Tipos de Piel
-    </h2>
-
+    <h2>Estadísticas de Tipos de Piel</h2>
     <canvas id="grafica"></canvas>
-
 </section>
 
 <footer>
-
-    <p>
-        Beauty Ideal © 2026
-    </p>
-
+    <p>Beauty Ideal © 2026</p>
 </footer>
 
+<!-- MODAL NUEVO PRODUCTO -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <button class="modal-close" id="btn-cerrar-modal">✕</button>
+        <h2>➕ Agregar Nuevo Producto</h2>
+        <div class="form-group">
+            <label>Nombre del producto</label>
+            <input type="text" id="prod-nombre" placeholder="Ej: Base líquida matificante">
+        </div>
+        <div class="form-group">
+            <label>Marca</label>
+            <input type="text" id="prod-marca" placeholder="Ej: Maybelline">
+        </div>
+        <div class="form-group">
+            <label>Tipo de piel</label>
+            <select id="prod-tipo">
+                <option value="">Selecciona tipo de piel</option>
+                <option value="1">Piel Sensible</option>
+                <option value="2">Piel Seca</option>
+                <option value="3">Piel Grasosa</option>
+                <option value="4">Piel Mixta</option>
+                <option value="5">Piel Normal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Categoría</label>
+            <select id="prod-categoria">
+                <option value="">Selecciona categoría</option>
+            </select>
+        </div>
+        <button class="btn-primary" id="btn-guardar-producto">Guardar Producto</button>
+        <div id="msg-resultado"></div>
+    </div>
+</div>
+
 <script src="/static/script.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-
-const ctx =
-document.getElementById('grafica');
-
-new Chart(ctx,{
-
-    type:'pie',
-
-    data:{
-        labels:[
-            'Sensible',
-            'Seca',
-            'Grasosa',
-            'Mixta',
-            'Normal'
-        ],
-
-        datasets:[{
-
-            data:[
-                15,
-                10,
-                20,
-                12,
-                8
-            ]
-
-        }]
+const ctx = document.getElementById('grafica');
+new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Sensible', 'Seca', 'Grasosa', 'Mixta', 'Normal'],
+        datasets: [{ data: [15, 10, 20, 12, 8], backgroundColor: ['#f48fb1','#ce93d8','#f06292','#ba68c8','#e91e8c'] }]
     }
-
 });
 
+document.getElementById('form-test').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const val = document.getElementById('select-piel').value;
+    const div = document.getElementById('resultado-test');
+    if (!val) { div.style.display='block'; div.textContent='⚠️ Por favor selecciona una opción.'; return; }
+    const rec = {
+        'Sensible': 'Tu piel es Sensible 🌸 — Te recomendamos productos sin fragancia, hipoalergénicos y con ingredientes calmantes como aloe vera.',
+        'Seca': 'Tu piel es Seca 💧 — Busca bases hidratantes, cremas ricas en ácido hialurónico y evita productos con alcohol.',
+        'Grasosa': 'Tu piel es Grasosa ✨ — Prefiere fórmulas oil-free, bases matificantes y polvos de control de brillo.',
+        'Mixta': 'Tu piel es Mixta 🌙 — Usa productos en gel o ligeros, y aplica matificantes solo en la zona T.',
+        'Normal': 'Tu piel es Normal 🌺 — ¡Tienes suerte! Casi cualquier fórmula te funcionará. Mantén tu rutina balanceada.'
+    };
+    div.style.display='block'; div.textContent=rec[val];
+});
+
+const overlay = document.getElementById('modal-overlay');
+document.getElementById('btn-abrir-modal').addEventListener('click', function(e) { e.preventDefault(); overlay.classList.add('open'); cargarCategorias(); });
+document.getElementById('btn-cerrar-modal').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('open'); });
+
+async function cargarCategorias() {
+    try {
+        const res = await fetch('/categorias');
+        const cats = await res.json();
+        const sel = document.getElementById('prod-categoria');
+        sel.innerHTML = '<option value="">Selecciona categoría</option>';
+        cats.forEach(c => { const o = document.createElement('option'); o.value=c.id; o.textContent=c.nombre; sel.appendChild(o); });
+    } catch(e) {}
+}
+
+document.getElementById('btn-guardar-producto').addEventListener('click', async () => {
+    const nombre = document.getElementById('prod-nombre').value.trim();
+    const marca = document.getElementById('prod-marca').value.trim();
+    const tipo = document.getElementById('prod-tipo').value;
+    const cat = document.getElementById('prod-categoria').value;
+    const msg = document.getElementById('msg-resultado');
+    if (!nombre || !marca || !tipo || !cat) { msg.className='msg-err'; msg.textContent='⚠️ Completa todos los campos.'; return; }
+    try {
+        const res = await fetch('/productos', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ nombre, marca, tipo_piel_id: parseInt(tipo), categoria_id: parseInt(cat) }) });
+        const data = await res.json();
+        if (res.ok) { msg.className='msg-ok'; msg.textContent='✅ Producto guardado (ID: '+data.id+')'; document.getElementById('prod-nombre').value=''; document.getElementById('prod-marca').value=''; }
+        else { msg.className='msg-err'; msg.textContent='❌ '+(data.detail||'No se pudo guardar.'); }
+    } catch(e) { msg.className='msg-err'; msg.textContent='❌ Error de conexión.'; }
+});
 </script>
 </body>
 </html>
