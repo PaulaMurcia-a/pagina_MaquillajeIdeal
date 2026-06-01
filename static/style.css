@@ -215,8 +215,8 @@ footer{
 }
 
 .card img {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     border-radius: 50%;
 }
