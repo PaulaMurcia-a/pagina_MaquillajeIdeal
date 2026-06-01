@@ -214,3 +214,9 @@ footer{
     color:#7d4ed8;
 }
 
+.card img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+}
