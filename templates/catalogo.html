@@ -151,13 +151,24 @@ document.getElementById('btn-cerrar-modal').addEventListener('click', () => over
 overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('open'); });
 
 async function cargarCategorias() {
-    try {
-        const res = await fetch('/categorias');
-        const cats = await res.json();
-        const sel = document.getElementById('prod-categoria');
-        sel.innerHTML='<option value="">Selecciona categoría</option>';
-        cats.forEach(c => { const o=document.createElement('option'); o.value=c.id; o.textContent=c.nombre; sel.appendChild(o); });
-    } catch(e) {}
+    const categorias = [
+        { id: 1, nombre: 'Base' },
+        { id: 2, nombre: 'Labial' },
+        { id: 3, nombre: 'Rubor' },
+        { id: 4, nombre: 'Sombra' },
+        { id: 5, nombre: 'Corrector' },
+        { id: 6, nombre: 'Contorno' },
+        { id: 7, nombre: 'Iluminador' },
+        { id: 8, nombre: 'Máscara de pestañas' }
+    ];
+    const sel = document.getElementById('prod-categoria');
+    sel.innerHTML = '<option value="">Selecciona categoría</option>';
+    categorias.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id;
+        o.textContent = c.nombre;
+        sel.appendChild(o);
+    });
 }
 
 document.getElementById('btn-guardar-producto').addEventListener('click', async () => {
