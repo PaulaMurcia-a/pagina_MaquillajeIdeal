@@ -97,16 +97,13 @@ header p{
 }
 
 .card img{
-    width:180px;
-    height:240px;
-    object-fit:cover;
-
-
-
-    border-radius:50% / 35%;
-
+    width:200px;
+    height:200px;
+    object-fit:contain;
+    border-radius:50%;
     border:5px solid #f7c8e3;
     margin-bottom:15px;
+    background:#fff5fa;
 }
 
 .card h3{
@@ -175,8 +172,8 @@ footer{
     }
 
     .card img{
-        width:140px;
-        height:190px;
+    width:150px;
+    height:150px;
     }
 
 }
@@ -214,9 +211,3 @@ footer{
     color:#7d4ed8;
 }
 
-.card img {
-    width: 200px;
-    height: 200px;
-    object-fit: contain;
-    border-radius: 50%;
-}
