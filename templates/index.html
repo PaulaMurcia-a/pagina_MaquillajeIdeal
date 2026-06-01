@@ -69,28 +69,28 @@
 
 <section class="pieles">
     <h2>Tipos de Piel</h2>
-    <div class="cards">
+    <div class="cards" onclick="verProductosPiel(1, 'Piel Sensible')">
         <div class="card">
             <img src="/static/img/piel-sensible.png" alt="Piel Sensible">
             <h3>Piel Sensible</h3>
             <p>Enrojecimiento en mejillas y frente, pequeñas rojeces e irritación.</p>
         </div>
-        <div class="card">
+        <div class="card" onclick="verProductosPiel(2, 'Piel Seca')">
             <img src="/static/img/piel-seca.png" alt="Piel Seca">
             <h3>Piel Seca</h3>
             <p>Descamación en mejillas y sensación de tirantez. Se observan zonas ásperas.</p>
         </div>
-        <div class="card">
-            <img src="/static/img/piel-grasosa.png" alt="Piel Grasosa">
+        <div class="card"onclick="verProductosPiel(3, 'Piel Grasa')">
+            <img src="/static/img/piel-grasosa.png" alt="Piel Grasa">
             <h3>Piel Grasosa</h3>
             <p>Brillo visible en frente, nariz y mentón. Poros dilatados e imperfecciones.</p>
         </div>
-        <div class="card">
+        <div class="card" onclick="verProductosPiel(4, 'Piel Mixta')">
             <img src="/static/img/piel-mixta.png" alt="Piel Mixta">
             <h3>Piel Mixta</h3>
             <p>Brillo en la zona T y zonas más secas en las mejillas.</p>
         </div>
-        <div class="card">
+        <div class="card" onclick="verProductosPiel(5, 'Piel Normal')">
             <img src="/static/img/piel-normal.png" alt="Piel Normal">
             <h3>Piel Normal</h3>
             <p>Piel equilibrada, sin brillo excesivo ni resequedad. Textura suave y uniforme.</p>
@@ -124,7 +124,7 @@
     <p>Beauty Ideal © 2026</p>
 </footer>
 
-<!-- MODAL NUEVO PRODUCTO -->
+
 <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
         <button class="modal-close" id="btn-cerrar-modal">✕</button>
@@ -192,13 +192,24 @@ document.getElementById('btn-cerrar-modal').addEventListener('click', () => over
 overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('open'); });
 
 async function cargarCategorias() {
-    try {
-        const res = await fetch('/categorias');
-        const cats = await res.json();
-        const sel = document.getElementById('prod-categoria');
-        sel.innerHTML = '<option value="">Selecciona categoría</option>';
-        cats.forEach(c => { const o = document.createElement('option'); o.value=c.id; o.textContent=c.nombre; sel.appendChild(o); });
-    } catch(e) {}
+    const categorias = [
+        { id: 1, nombre: 'Base' },
+        { id: 2, nombre: 'Labial' },
+        { id: 3, nombre: 'Rubor' },
+        { id: 4, nombre: 'Sombra' },
+        { id: 5, nombre: 'Corrector' },
+        { id: 6, nombre: 'Contorno' },
+        { id: 7, nombre: 'Iluminador' },
+        { id: 8, nombre: 'Máscara de pestañas' }
+    ];
+    const sel = document.getElementById('prod-categoria');
+    sel.innerHTML = '<option value="">Selecciona categoría</option>';
+    categorias.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id;
+        o.textContent = c.nombre;
+        sel.appendChild(o);
+    });
 }
 
 document.getElementById('btn-guardar-producto').addEventListener('click', async () => {
@@ -214,7 +225,46 @@ document.getElementById('btn-guardar-producto').addEventListener('click', async 
         if (res.ok) { msg.className='msg-ok'; msg.textContent='✅ Producto guardado (ID: '+data.id+')'; document.getElementById('prod-nombre').value=''; document.getElementById('prod-marca').value=''; }
         else { msg.className='msg-err'; msg.textContent='❌ '+(data.detail||'No se pudo guardar.'); }
     } catch(e) { msg.className='msg-err'; msg.textContent='❌ Error de conexión.'; }
+    document.getElementById('modal-piel').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+});
+
+async function verProductosPiel(tipoPielId, nombre) {
+    const modal = document.getElementById('modal-piel');
+    const titulo = document.getElementById('modal-piel-titulo');
+    const cargando = document.getElementById('modal-piel-cargando');
+    const vacio = document.getElementById('modal-piel-vacio');
+    const lista = document.getElementById('modal-piel-lista');
+    titulo.textContent = 'Productos para ' + nombre;
+    cargando.style.display = 'block';
+    vacio.style.display = 'none';
+    lista.innerHTML = '';
+    modal.classList.add('open');
+    try {
+        const res = await fetch('/productos/piel/' + tipoPielId);
+        const productos = await res.json();
+        cargando.style.display = 'none';
+        if (!productos.length) { vacio.style.display = 'block'; return; }
+        productos.forEach(p => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="prod-nombre">${p.nombre}</span><br><span class="prod-marca">🏷 ${p.marca}</span>`;
+            lista.appendChild(li);
+        });
+    } catch(e) {
+        cargando.style.display = 'none';
+        lista.innerHTML = '<li style="color:#c62828">❌ Error al cargar productos.</li>';
+    }
+}
 });
 </script>
+<div id="modal-piel">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modal-piel').classList.remove('open')">✕</button>
+        <h2 id="modal-piel-titulo">Productos para ...</h2>
+        <div id="modal-piel-cargando">Cargando productos...</div>
+        <div id="modal-piel-vacio" style="display:none">😔 No hay productos para este tipo de piel aún.</div>
+        <ul class="lista-productos" id="modal-piel-lista"></ul>
+    </div>
+</div>
 </body>
 </html>
