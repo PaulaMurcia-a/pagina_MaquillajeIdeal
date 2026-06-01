@@ -1,29 +1,179 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-
-    <title>
-        Catálogo
-    </title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Beauty Ideal</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        nav { background:#fff; border-bottom:2px solid #f7c5d5; padding:.7rem 2rem; display:flex; gap:1.5rem; align-items:center; justify-content:flex-end; }
+        nav a { text-decoration:none; color:#c0446a; font-weight:600; font-size:.95rem; padding:.4rem 1rem; border-radius:20px; transition:background .2s; }
+        nav a:hover, nav a.active { background:#fce4ec; }
+        .catalogo-header { text-align:center; padding:2.5rem 1rem 1rem; }
+        .catalogo-header h1 { color:#c0446a; font-size:2rem; }
+        .filtros { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; padding:1rem 2rem; background:#fff9fb; border-bottom:1px solid #f7c5d5; }
+        .filtros input, .filtros select { padding:.55rem 1rem; border:1.5px solid #f7c5d5; border-radius:25px; font-size:.9rem; outline:none; min-width:180px; }
+        .filtros input:focus, .filtros select:focus { border-color:#c0446a; }
+        .filtros button { background:#c0446a; color:#fff; border:none; padding:.55rem 1.4rem; border-radius:25px; font-weight:600; cursor:pointer; }
+        .filtros button:hover { background:#a0305a; }
+        .btn-limpiar { background:#fff !important; color:#c0446a !important; border:1.5px solid #f7c5d5 !important; }
+        .productos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.4rem; padding:2rem; max-width:1100px; margin:0 auto; }
+        .producto-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(192,68,106,.10); padding:1.4rem 1.2rem; transition:transform .2s,box-shadow .2s; border:1.5px solid #fce4ec; }
+        .producto-card:hover { transform:translateY(-4px); box-shadow:0 6px 20px rgba(192,68,106,.18); }
+        .producto-card h3 { color:#c0446a; font-size:1rem; margin-bottom:.4rem; }
+        .producto-card .marca { color:#888; font-size:.85rem; margin-bottom:.5rem; }
+        .badge { display:inline-block; background:#fce4ec; color:#c0446a; font-size:.75rem; padding:.2rem .7rem; border-radius:20px; font-weight:600; }
+        #sin-resultados { text-align:center; color:#aaa; padding:3rem 1rem; font-size:1.1rem; display:none; }
+        #cargando { text-align:center; color:#c0446a; padding:2rem; }
+        footer { margin-top:3rem; }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.open { display:flex; }
+        .modal { background:#fff; border-radius:16px; padding:2rem; width:90%; max-width:480px; box-shadow:0 8px 32px rgba(192,68,106,.18); position:relative; }
+        .modal h2 { color:#c0446a; margin-bottom:1.2rem; font-size:1.3rem; }
+        .modal-close { position:absolute; top:1rem; right:1.2rem; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#888; }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; font-size:.85rem; font-weight:600; color:#555; margin-bottom:.3rem; }
+        .form-group input, .form-group select { width:100%; padding:.6rem .9rem; border:1.5px solid #f7c5d5; border-radius:8px; font-size:.95rem; outline:none; box-sizing:border-box; }
+        .form-group input:focus, .form-group select:focus { border-color:#c0446a; }
+        .btn-primary { background:#c0446a; color:#fff; border:none; padding:.7rem 2rem; border-radius:25px; font-size:1rem; font-weight:600; cursor:pointer; width:100%; }
+        .btn-primary:hover { background:#a0305a; }
+        #msg-resultado { margin-top:.8rem; font-size:.9rem; text-align:center; min-height:1.2rem; }
+        .msg-ok { color:#2e7d32; } .msg-err { color:#c62828; }
+    </style>
 </head>
 <body>
 
-<h1>
-    Catálogo de Productos
-</h1>
+<nav>
+    <a href="/">Inicio</a>
+    <a href="/catalogo" class="active">🛍 Catálogo</a>
+    <a href="#" id="btn-abrir-modal">➕ Nuevo Producto</a>
+</nav>
 
-{% for producto in productos %}
-
-<div class="card">
-
-    <h3>
-        {{ producto.nombre }}
-    </h3>
-
+<div class="catalogo-header">
+    <h1>🛍 Catálogo de Productos</h1>
+    <p style="color:#888;">Todos los productos disponibles para tu tipo de piel</p>
 </div>
 
-{% endfor %}
+<div class="filtros">
+    <input type="text" id="filtro-nombre" placeholder="🔍 Buscar por nombre...">
+    <input type="text" id="filtro-marca" placeholder="🏷 Filtrar por marca...">
+    <button id="btn-filtrar">Filtrar</button>
+    <button class="btn-limpiar" id="btn-limpiar">Limpiar</button>
+</div>
 
+<div id="cargando">Cargando productos...</div>
+<div class="productos-grid" id="productos-grid"></div>
+<div id="sin-resultados">😔 No se encontraron productos con esos filtros.</div>
+
+<footer><p>Beauty Ideal © 2026</p></footer>
+
+<!-- MODAL NUEVO PRODUCTO -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <button class="modal-close" id="btn-cerrar-modal">✕</button>
+        <h2>➕ Agregar Nuevo Producto</h2>
+        <div class="form-group">
+            <label>Nombre del producto</label>
+            <input type="text" id="prod-nombre" placeholder="Ej: Base líquida matificante">
+        </div>
+        <div class="form-group">
+            <label>Marca</label>
+            <input type="text" id="prod-marca" placeholder="Ej: Maybelline">
+        </div>
+        <div class="form-group">
+            <label>Tipo de piel</label>
+            <select id="prod-tipo">
+                <option value="">Selecciona tipo de piel</option>
+                <option value="1">Piel Sensible</option>
+                <option value="2">Piel Seca</option>
+                <option value="3">Piel Grasosa</option>
+                <option value="4">Piel Mixta</option>
+                <option value="5">Piel Normal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Categoría</label>
+            <select id="prod-categoria">
+                <option value="">Selecciona categoría</option>
+            </select>
+        </div>
+        <button class="btn-primary" id="btn-guardar-producto">Guardar Producto</button>
+        <div id="msg-resultado"></div>
+    </div>
+</div>
+
+<script>
+const TIPO_PIEL = {1:'Sensible', 2:'Seca', 3:'Grasosa', 4:'Mixta', 5:'Normal'};
+
+async function cargarProductos(nombre='', marca='') {
+    const grid = document.getElementById('productos-grid');
+    const cargando = document.getElementById('cargando');
+    const sinRes = document.getElementById('sin-resultados');
+    cargando.style.display='block'; grid.innerHTML=''; sinRes.style.display='none';
+    let url = '/productos';
+    if (nombre && !marca) url = '/productos/buscar/?nombre=' + encodeURIComponent(nombre);
+    else if (marca && !nombre) url = '/productos/marca/?marca=' + encodeURIComponent(marca);
+    else if (nombre && marca) url = '/productos/buscar/?nombre=' + encodeURIComponent(nombre) + '&marca=' + encodeURIComponent(marca);
+    try {
+        const res = await fetch(url);
+        const productos = await res.json();
+        cargando.style.display='none';
+        if (!productos.length) { sinRes.style.display='block'; return; }
+        productos.forEach(p => {
+            const card = document.createElement('div');
+            card.className='producto-card';
+            card.innerHTML = `<h3>${p.nombre}</h3><p class="marca">🏷 ${p.marca}</p><span class="badge">🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}</span>`;
+            grid.appendChild(card);
+        });
+    } catch(e) {
+        cargando.style.display='none';
+        grid.innerHTML='<p style="color:#c62828;text-align:center;padding:2rem;">❌ Error al cargar productos.</p>';
+    }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const buscarInicial = urlParams.get('buscar') || '';
+if (buscarInicial) document.getElementById('filtro-nombre').value = buscarInicial;
+cargarProductos(buscarInicial);
+
+document.getElementById('btn-filtrar').addEventListener('click', () => {
+    cargarProductos(document.getElementById('filtro-nombre').value.trim(), document.getElementById('filtro-marca').value.trim());
+});
+document.getElementById('btn-limpiar').addEventListener('click', () => {
+    document.getElementById('filtro-nombre').value=''; document.getElementById('filtro-marca').value=''; cargarProductos();
+});
+document.getElementById('filtro-nombre').addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('btn-filtrar').click(); });
+document.getElementById('filtro-marca').addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('btn-filtrar').click(); });
+
+const overlay = document.getElementById('modal-overlay');
+document.getElementById('btn-abrir-modal').addEventListener('click', e => { e.preventDefault(); overlay.classList.add('open'); cargarCategorias(); });
+document.getElementById('btn-cerrar-modal').addEventListener('click', () => overlay.classList.remove('open'));
+overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('open'); });
+
+async function cargarCategorias() {
+    try {
+        const res = await fetch('/categorias');
+        const cats = await res.json();
+        const sel = document.getElementById('prod-categoria');
+        sel.innerHTML='<option value="">Selecciona categoría</option>';
+        cats.forEach(c => { const o=document.createElement('option'); o.value=c.id; o.textContent=c.nombre; sel.appendChild(o); });
+    } catch(e) {}
+}
+
+document.getElementById('btn-guardar-producto').addEventListener('click', async () => {
+    const nombre=document.getElementById('prod-nombre').value.trim();
+    const marca=document.getElementById('prod-marca').value.trim();
+    const tipo=document.getElementById('prod-tipo').value;
+    const cat=document.getElementById('prod-categoria').value;
+    const msg=document.getElementById('msg-resultado');
+    if (!nombre||!marca||!tipo||!cat) { msg.className='msg-err'; msg.textContent='⚠️ Completa todos los campos.'; return; }
+    try {
+        const res=await fetch('/productos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,marca,tipo_piel_id:parseInt(tipo),categoria_id:parseInt(cat)})});
+        const data=await res.json();
+        if (res.ok) { msg.className='msg-ok'; msg.textContent='✅ Producto guardado (ID: '+data.id+')'; document.getElementById('prod-nombre').value=''; document.getElementById('prod-marca').value=''; setTimeout(()=>{ overlay.classList.remove('open'); cargarProductos(); msg.textContent=''; },1500); }
+        else { msg.className='msg-err'; msg.textContent='❌ '+(data.detail||'Error al guardar.'); }
+    } catch(e) { msg.className='msg-err'; msg.textContent='❌ Error de conexión.'; }
+});
+</script>
 </body>
 </html>
