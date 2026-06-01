@@ -122,7 +122,7 @@ async function cargarProductos(nombre='', marca='') {
         productos.forEach(p => {
             const card = document.createElement('div');
             card.className='producto-card';
-            card.innerHTML = `<h3>${p.nombre}</h3><p class="marca">🏷 ${p.marca}</p><span class="badge">🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}</span>`;
+            card.innerHTML = `<h3>${p.nombre}</h3><p class="marca">💗 ${p.marca}</p><span class="badge">🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}</span>`;
             grid.appendChild(card);
         });
     } catch(e) {
