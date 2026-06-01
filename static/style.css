@@ -214,3 +214,47 @@ footer{
 #modal-piel-cargando { text-align:center; color:#d64d92; padding:1.5rem; }
 #modal-piel-vacio { text-align:center; color:#aaa; padding:1.5rem; }
 
+#modal-piel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+#modal-piel.open {
+    display: flex;
+}
+
+#modal-piel .modal {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.2);
+}
+
+.lista-productos {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.lista-productos li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.prod-nombre {
+    font-weight: bold;
+    color: #c0446a;
+}
+
+.prod-marca {
+    color: #666;
+    font-size: 14px;
+}
+

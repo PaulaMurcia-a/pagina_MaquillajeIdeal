@@ -218,44 +218,99 @@ document.getElementById('btn-guardar-producto').addEventListener('click', async 
     const tipo = document.getElementById('prod-tipo').value;
     const cat = document.getElementById('prod-categoria').value;
     const msg = document.getElementById('msg-resultado');
-    if (!nombre || !marca || !tipo || !cat) { msg.className='msg-err'; msg.textContent='⚠️ Completa todos los campos.'; return; }
+
+    if (!nombre || !marca || !tipo || !cat) {
+        msg.className = 'msg-err';
+        msg.textContent = '⚠️ Completa todos los campos.';
+        return;
+    }
+
     try {
-        const res = await fetch('/productos', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ nombre, marca, tipo_piel_id: parseInt(tipo), categoria_id: parseInt(cat) }) });
+        const res = await fetch('/productos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nombre,
+                marca,
+                tipo_piel_id: parseInt(tipo),
+                categoria_id: parseInt(cat)
+            })
+        });
+
         const data = await res.json();
-        if (res.ok) { msg.className='msg-ok'; msg.textContent='✅ Producto guardado (ID: '+data.id+')'; document.getElementById('prod-nombre').value=''; document.getElementById('prod-marca').value=''; }
-        else { msg.className='msg-err'; msg.textContent='❌ '+(data.detail||'No se pudo guardar.'); }
-    } catch(e) { msg.className='msg-err'; msg.textContent='❌ Error de conexión.'; }
-    document.getElementById('modal-piel').addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
+
+        if (res.ok) {
+            msg.className = 'msg-ok';
+            msg.textContent = '✅ Producto guardado (ID: ' + data.id + ')';
+
+            document.getElementById('prod-nombre').value = '';
+            document.getElementById('prod-marca').value = '';
+        } else {
+            msg.className = 'msg-err';
+            msg.textContent = '❌ ' + (data.detail || 'No se pudo guardar.');
+        }
+
+    } catch (e) {
+        msg.className = 'msg-err';
+        msg.textContent = '❌ Error de conexión.';
+    }
+});
+
+document.getElementById('modal-piel').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.classList.remove('open');
+    }
 });
 
 async function verProductosPiel(tipoPielId, nombre) {
+
     const modal = document.getElementById('modal-piel');
     const titulo = document.getElementById('modal-piel-titulo');
     const cargando = document.getElementById('modal-piel-cargando');
     const vacio = document.getElementById('modal-piel-vacio');
     const lista = document.getElementById('modal-piel-lista');
+
     titulo.textContent = 'Productos para ' + nombre;
+
     cargando.style.display = 'block';
     vacio.style.display = 'none';
     lista.innerHTML = '';
+
     modal.classList.add('open');
+
     try {
+
         const res = await fetch('/productos/piel/' + tipoPielId);
         const productos = await res.json();
+
         cargando.style.display = 'none';
-        if (!productos.length) { vacio.style.display = 'block'; return; }
+
+        if (!productos.length) {
+            vacio.style.display = 'block';
+            return;
+        }
+
         productos.forEach(p => {
             const li = document.createElement('li');
-            li.innerHTML = `<span class="prod-nombre">${p.nombre}</span><br><span class="prod-marca">🏷 ${p.marca}</span>`;
+
+            li.innerHTML = `
+                <span class="prod-nombre">${p.nombre}</span><br>
+                <span class="prod-marca">🏷 ${p.marca}</span>
+            `;
+
             lista.appendChild(li);
         });
-    } catch(e) {
+
+    } catch (e) {
+
         cargando.style.display = 'none';
-        lista.innerHTML = '<li style="color:#c62828">❌ Error al cargar productos.</li>';
+
+        lista.innerHTML =
+            '<li style="color:#c62828">❌ Error al cargar productos.</li>';
     }
 }
-});
 </script>
 <div id="modal-piel">
     <div class="modal">
