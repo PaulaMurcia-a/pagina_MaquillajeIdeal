@@ -258,3 +258,27 @@ footer{
     font-size: 14px;
 }
 
+
+.dashboard {
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+#grafica {
+    max-width: 400px;
+    max-height: 400px;
+    margin: 0 auto;
+}
+
+ /*celulares*/
+@media (max-width: 768px) {
+    .dashboard {
+        max-width: 100%;
+    }
+
+    #grafica {
+        max-width: 100%;
+        max-height: none;
+    }
+}
+
