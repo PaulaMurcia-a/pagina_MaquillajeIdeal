@@ -271,7 +271,7 @@ footer{
 }
 
  /*celulares*/
-@media (max-width: 768px) {
+@media (max-width: 760PX){
     .dashboard {
         max-width: 100%;
     }
