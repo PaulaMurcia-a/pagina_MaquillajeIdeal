@@ -534,12 +534,15 @@ footer{
 
 @media (max-width: 768px){
     .dashboard {
-        max-width: 100%;
+        width: calc(100% - 40px);
+        margin: 20px auto;
+        padding: 20px;
     }
 
     #grafica {
-        max-width: 80%;
-        max-height: none;
+        max-width: 300px;
+        max-height: 300px;
+        margin: 0 auto;
     }
 }
 
