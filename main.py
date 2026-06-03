@@ -329,3 +329,12 @@ def eliminar_categoria(cat_id: int):
     return {
         "mensaje": "Eliminada"
     }
+
+@app.get("/estadisticas")
+def estadisticas():
+
+    productos = get_productos()
+
+    return {
+        "total_productos": len(productos)
+    }

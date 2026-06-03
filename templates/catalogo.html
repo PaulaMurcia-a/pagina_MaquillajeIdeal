@@ -62,28 +62,39 @@
     <button class="btn-limpiar" id="btn-limpiar">Limpiar</button>
 </div>
 
+<section id="dashboard" style="padding:20px;text-align:center;">
+    <div style="background:white;border-radius:10px;padding:20px;margin-bottom:20px;">
+        <h2>Total Productos</h2>
+        <h1 id="total-productos">0</h1>
+    </div>
+
+    <canvas id="graficaProductos"></canvas>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div id="cargando">Cargando productos...</div>
 <div class="productos-grid" id="productos-grid"></div>
 <div id="sin-resultados">😔 No se encontraron productos con esos filtros.</div>
 
 <footer><p>Beauty Ideal © 2026</p></footer>
 
-<!-- MODAL NUEVO PRODUCTO -->
+
 <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
         <button class="modal-close" id="btn-cerrar-modal">✕</button>
         <h2>➕ Agregar Nuevo Producto</h2>
         <div class="form-group">
             <label>Nombre del producto</label>
-            <input type="text" id="prod-nombre" placeholder="Ej: Base líquida matificante">
+            <input type="text" id="prod-nombre" placeholder="Ej: Base líquida matificante" required>
         </div>
         <div class="form-group">
             <label>Marca</label>
-            <input type="text" id="prod-marca" placeholder="Ej: Maybelline">
+            <input type="text" id="prod-marca" placeholder="Ej: Maybelline" required>
         </div>
         <div class="form-group">
             <label>Tipo de piel</label>
-            <select id="prod-tipo">
+            <select id="prod-tipo" required>
                 <option value="">Selecciona tipo de piel</option>
                 <option value="1">Piel Sensible</option>
                 <option value="2">Piel Seca</option>
@@ -94,7 +105,7 @@
         </div>
         <div class="form-group">
             <label>Categoría</label>
-            <select id="prod-categoria">
+            <select id="prod-categoria" required>
                 <option value="">Selecciona categoría</option>
             </select>
         </div>
@@ -123,7 +134,29 @@ async function cargarProductos(nombre='', marca='') {
         productos.forEach(p => {
             const card = document.createElement('div');
             card.className='producto-card';
-            card.innerHTML = `<h3>${p.nombre}</h3><p class="marca">💗 ${p.marca}</p><span class="badge">🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}</span>`;
+            card.innerHTML = `
+    <h3>${p.nombre}</h3>
+    <p class="marca">💗 ${p.marca}</p>
+
+    <span class="badge">
+        🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}
+    </span>
+
+    <div style="margin-top:15px;">
+        <button
+            onclick="eliminarProducto(${p.id})"
+            style="
+                background:#d32f2f;
+                color:white;
+                border:none;
+                padding:8px 12px;
+                border-radius:8px;
+                cursor:pointer;
+            ">
+            🗑 Eliminar
+        </button>
+    </div>
+`;
             grid.appendChild(card);
         });
     } catch(e) {
@@ -186,6 +219,67 @@ document.getElementById('btn-guardar-producto').addEventListener('click', async 
         else { msg.className='msg-err'; msg.textContent='❌ '+(data.detail||'Error al guardar.'); }
     } catch(e) { msg.className='msg-err'; msg.textContent='❌ Error de conexión.'; }
 });
+
+async function cargarDashboard() {
+
+    const respuesta = await fetch('/productos');
+    const productos = await respuesta.json();
+
+    document.getElementById('total-productos').textContent =
+        productos.length;
+
+    const ctx = document.getElementById('graficaProductos');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Productos'],
+            datasets: [{
+                label: 'Cantidad',
+                data: [productos.length]
+            }]
+        }
+    });
+}
+
+cargarDashboard();
+
+async function eliminarProducto(id) {
+
+    const confirmar = confirm(
+        "¿Deseas eliminar este producto?"
+    );
+
+    if (!confirmar) return;
+
+    try {
+
+        const respuesta = await fetch(
+            `/productos/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (respuesta.ok) {
+
+            alert("Producto eliminado");
+
+            cargarProductos();
+
+        } else {
+
+            alert("Error al eliminar");
+
+        }
+
+    } catch(error) {
+
+        alert("Error de conexión");
+
+    }
+}
+
 </script>
 </body>
 </html>
