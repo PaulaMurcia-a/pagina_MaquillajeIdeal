@@ -7,8 +7,8 @@ class Producto(BaseModel):
     marca: str
     tipo_piel_id: int
     categoria_id: int
-    imagen_url: Optional[str] = None
 
+    
     @field_validator("nombre", "marca")
     @classmethod
     def no_vacio(cls, v):
