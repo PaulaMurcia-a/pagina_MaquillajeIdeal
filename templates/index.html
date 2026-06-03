@@ -160,6 +160,15 @@
     </div>
 </div>
 
+<div id="modal-piel">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modal-piel').classList.remove('open')">✕</button>
+        <h2 id="modal-piel-titulo">Productos para ...</h2>
+        <div id="modal-piel-cargando">Cargando productos...</div>
+        <div id="modal-piel-vacio" style="display:none">😔 No hay productos para este tipo de piel aún.</div>
+        <ul class="lista-productos" id="modal-piel-lista"></ul>
+    </div>
+
 <script src="/static/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -313,14 +322,6 @@ async function verProductosPiel(tipoPielId, nombre) {
     }
 }
 </script>
-<div id="modal-piel">
-    <div class="modal">
-        <button class="modal-close" onclick="document.getElementById('modal-piel').classList.remove('open')">✕</button>
-        <h2 id="modal-piel-titulo">Productos para ...</h2>
-        <div id="modal-piel-cargando">Cargando productos...</div>
-        <div id="modal-piel-vacio" style="display:none">😔 No hay productos para este tipo de piel aún.</div>
-        <ul class="lista-productos" id="modal-piel-lista"></ul>
-    </div>
 </div>
 </body>
 </html>
