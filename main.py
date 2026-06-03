@@ -36,7 +36,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Beauty App",
+    title="Maquillaje Ideal API",
+    description="API REST para gestión de productos de maquillaje según tipo de piel. Incluye CRUD de productos, categorías, tipos de piel y recomendaciones personalizadas.",
+    version="1.0.0",
     lifespan=lifespan
 )
 
@@ -330,11 +332,48 @@ def eliminar_categoria(cat_id: int):
         "mensaje": "Eliminada"
     }
 
-@app.get("/estadisticas")
-def estadisticas():
-
+@app.get("/estadisticas", response_class=HTMLResponse)
+def estadisticas(request: Request):
+    from service import get_categorias, get_tipos_piel
     productos = get_productos()
+    categorias = get_categorias()
+    tipos_piel = get_tipos_piel()
 
+    # Conteo por tipo de piel
+    conteo_por_tipo = {}
+    for tp in tipos_piel:
+        conteo_por_tipo[tp["nombre"]] = sum(
+            1 for p in productos if p["tipo_piel_id"] == tp["id"]
+        )
+
+    # Conteo por categoría
+    conteo_por_categoria = {}
+    for cat in categorias:
+        conteo_por_categoria[cat["nombre"]] = sum(
+            1 for p in productos if p["categoria_id"] == cat["id"]
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="estadisticas.html",
+        context={
+            "request": request,
+            "total_productos": len(productos),
+            "total_categorias": len(categorias),
+            "total_tipos_piel": len(tipos_piel),
+            "conteo_por_tipo": conteo_por_tipo,
+            "conteo_por_categoria": conteo_por_categoria,
+        }
+    )
+
+@app.get("/api/estadisticas")
+def estadisticas_json():
+    from service import get_categorias, get_tipos_piel
+    productos = get_productos()
+    categorias = get_categorias()
+    tipos_piel = get_tipos_piel()
     return {
-        "total_productos": len(productos)
+        "total_productos": len(productos),
+        "total_categorias": len(categorias),
+        "total_tipos_piel": len(tipos_piel),
     }

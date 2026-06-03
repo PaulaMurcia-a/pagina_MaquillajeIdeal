@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Maquillaje Ideal</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        .stats-cards { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            flex: 1;
+            min-width: 180px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .card h2 { font-size: 2.5rem; color: #c0748a; margin: 0; }
+        .card p { color: #666; margin: 0.3rem 0 0; }
+        .charts { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .chart-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            flex: 1;
+            min-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .chart-box h3 { color: #444; margin-top: 0; }
+        nav a { margin-right: 1rem; color: #c0748a; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav style="background:#fff;padding:1rem 2rem;box-shadow:0 1px 4px rgba(0,0,0,0.1);">
+        <a href="/">Inicio</a>
+        <a href="/catalogo">Catálogo</a>
+        <a href="/estadisticas">Dashboard</a>
+    </nav>
+
+    <div class="dashboard">
+        <h1 style="color:#c0748a;">📊 Dashboard Estadístico</h1>
+
+        <div class="stats-cards">
+            <div class="card">
+                <h2>{{ total_productos }}</h2>
+                <p>Productos activos</p>
+            </div>
+            <div class="card">
+                <h2>{{ total_categorias }}</h2>
+                <p>Categorías</p>
+            </div>
+            <div class="card">
+                <h2>{{ total_tipos_piel }}</h2>
+                <p>Tipos de piel</p>
+            </div>
+        </div>
+
+        <div class="charts">
+            <div class="chart-box">
+                <h3>Productos por Tipo de Piel</h3>
+                <canvas id="graficaTipoPiel"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Productos por Categoría</h3>
+                <canvas id="graficaCategoria"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const colores = ['#c0748a','#f4a7b9','#e8c4ce','#a05c70','#f9d4dc','#7a3f52'];
+
+        new Chart(document.getElementById('graficaTipoPiel'), {
+            type: 'doughnut',
+            data: {
+                labels: {{ conteo_por_tipo.keys() | list | tojson }},
+                datasets: [{
+                    data: {{ conteo_por_tipo.values() | list | tojson }},
+                    backgroundColor: colores
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('graficaCategoria'), {
+            type: 'bar',
+            data: {
+                labels: {{ conteo_por_categoria.keys() | list | tojson }},
+                datasets: [{
+                    label: 'Productos',
+                    data: {{ conteo_por_categoria.values() | list | tojson }},
+                    backgroundColor: '#c0748a'
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    </script>
+</body>
+</html>

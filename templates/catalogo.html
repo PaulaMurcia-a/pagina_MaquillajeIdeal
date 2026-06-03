@@ -47,8 +47,20 @@
 <nav>
     <a href="/">Inicio</a>
     <a href="/catalogo" class="active">👜 Catálogo</a>
+    <a href="/estadisticas">📊 Dashboard</a>
     <a href="#" id="btn-abrir-modal">➕ Nuevo Producto</a>
 </nav>
+
+<div style="max-width:900px;margin:1.5rem auto;padding:0 1rem;">
+    <input
+        type="text"
+        id="busqueda"
+        placeholder="🔍 Buscar producto por nombre o marca..."
+        oninput="filtrarProductos()"
+        style="width:100%;padding:0.75rem 1rem;border-radius:25px;border:2px solid #c0748a;font-size:1rem;outline:none;"
+    >
+</div>
+
 
 <div class="catalogo-header">
     <h1>🛍 Catálogo de Productos</h1>
@@ -280,6 +292,18 @@ async function eliminarProducto(id) {
     }
 }
 
+</script>
+
+<script>
+function filtrarProductos() {
+    const texto = document.getElementById('busqueda').value.toLowerCase();
+    const tarjetas = document.querySelectorAll('.producto-card');
+    tarjetas.forEach(card => {
+        const nombre = card.querySelector('.producto-nombre')?.textContent.toLowerCase() || '';
+        const marca = card.querySelector('.producto-marca')?.textContent.toLowerCase() || '';
+        card.style.display = (nombre.includes(texto) || marca.includes(texto)) ? '' : 'none';
+    });
+}
 </script>
 </body>
 </html>
