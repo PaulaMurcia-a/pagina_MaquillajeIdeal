@@ -2,7 +2,7 @@ from database import get_connection
 from models import Producto
 
 
-# PRODUCTOS
+# producto
 
 
 def get_productos():
@@ -93,7 +93,7 @@ def delete_producto(producto_id: int):
     conn.close()
     return affected > 0
 
-# FILTROS
+# filtros
 
 
 def recomendar_productos(tipo_piel_id: int):
@@ -130,7 +130,7 @@ def filtrar_productos(nombre: str = None, marca: str = None):
     conn.close()
     return [_producto_row(r) for r in rows]
 
-# TIPOS DE PIEL
+# tipos de piel
 
 def get_tipos_piel():
     conn = get_connection()
@@ -194,7 +194,7 @@ def delete_tipo_piel(tipo_id: int):
     return affected > 0
 
 
-# CATEGORÍAS
+# categorias
 
 
 def get_categorias():
