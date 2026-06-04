@@ -40,6 +40,11 @@
         .btn-primary:hover { background:#a0305a; }
         #msg-resultado { margin-top:.8rem; font-size:.9rem; text-align:center; min-height:1.2rem; }
         .msg-ok { color:#2e7d32; } .msg-err { color:#c62828; }
+        .btn-desactivar { background:#d32f2f; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:.85rem; font-weight:600; }
+        .btn-desactivar:hover { background:#b71c1c; }
+        .btn-actualizar { background:#c0446a; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size:.85rem; font-weight:600; }
+        .btn-actualizar:hover { background:#a0305a; }
+        .card-botones { display:flex; gap:8px; margin-top:15px; }
     </style>
 </head>
 <body>
@@ -50,7 +55,6 @@
     <a href="/estadisticas">📊 Dashboard</a>
     <a href="#" id="btn-abrir-modal">➕ Nuevo Producto</a>
 </nav>
-
 
 <div class="catalogo-header">
     <h1>🛍 Catálogo de Productos</h1>
@@ -69,7 +73,6 @@
         <h2>Total Productos</h2>
         <h1 id="total-productos">0</h1>
     </div>
-
     <canvas id="graficaProductos"></canvas>
 </section>
 
@@ -81,7 +84,7 @@
 
 <footer><p>Beauty Ideal © 2026</p></footer>
 
-
+<!-- Modal Nuevo Producto -->
 <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
         <button class="modal-close" id="btn-cerrar-modal">✕</button>
@@ -116,6 +119,48 @@
     </div>
 </div>
 
+<!-- Modal Actualizar -->
+<div class="modal-overlay" id="modal-actualizar-overlay">
+    <div class="modal">
+        <button class="modal-close" id="btn-cerrar-actualizar">✕</button>
+        <h2>✏️ Actualizar Producto</h2>
+        <input type="hidden" id="act-id">
+        <div class="form-group">
+            <label>Nombre del producto</label>
+            <input type="text" id="act-nombre" placeholder="Nombre" required>
+        </div>
+        <div class="form-group">
+            <label>Marca</label>
+            <input type="text" id="act-marca" placeholder="Marca" required>
+        </div>
+        <div class="form-group">
+            <label>Tipo de piel</label>
+            <select id="act-tipo" required>
+                <option value="1">Piel Sensible</option>
+                <option value="2">Piel Seca</option>
+                <option value="3">Piel Grasa</option>
+                <option value="4">Piel Mixta</option>
+                <option value="5">Piel Normal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Categoría</label>
+            <select id="act-categoria" required>
+                <option value="1">Base</option>
+                <option value="2">Labial</option>
+                <option value="3">Rubor</option>
+                <option value="4">Sombra</option>
+                <option value="5">Corrector</option>
+                <option value="6">Contorno</option>
+                <option value="7">Iluminador</option>
+                <option value="8">Máscara de pestañas</option>
+            </select>
+        </div>
+        <button class="btn-primary" id="btn-guardar-actualizar">Guardar Cambios</button>
+        <div id="msg-actualizar"></div>
+    </div>
+</div>
+
 <script>
 const TIPO_PIEL = {1:'Sensible', 2:'Seca', 3:'Grasa', 4:'Mixta', 5:'Normal'};
 
@@ -139,24 +184,10 @@ async function cargarProductos(nombre='', marca='') {
             card.innerHTML = `
     <h3>${p.nombre}</h3>
     <p class="marca">💗 ${p.marca}</p>
-
-    <span class="badge">
-        🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}
-    </span>
-
-    <div style="margin-top:15px;">
-        <button
-            onclick="eliminarProducto(${p.id})"
-            style="
-                background:#d32f2f;
-                color:white;
-                border:none;
-                padding:8px 12px;
-                border-radius:8px;
-                cursor:pointer;
-            ">
-            🗑 Eliminar
-        </button>
+    <span class="badge">🌸 ${TIPO_PIEL[p.tipo_piel_id] || 'Piel '+p.tipo_piel_id}</span>
+    <div class="card-botones">
+        <button class="btn-actualizar" onclick="abrirModalActualizar(${p.id}, \`${p.nombre}\`, \`${p.marca}\`, ${p.tipo_piel_id}, ${p.categoria_id})">✏️ Actualizar</button>
+        <button class="btn-desactivar" onclick="desactivarProducto(${p.id})">🚫 Desactivar</button>
     </div>
 `;
             grid.appendChild(card);
@@ -188,22 +219,15 @@ overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classLis
 
 async function cargarCategorias() {
     const categorias = [
-        { id: 1, nombre: 'Base' },
-        { id: 2, nombre: 'Labial' },
-        { id: 3, nombre: 'Rubor' },
-        { id: 4, nombre: 'Sombra' },
-        { id: 5, nombre: 'Corrector' },
-        { id: 6, nombre: 'Contorno' },
-        { id: 7, nombre: 'Iluminador' },
-        { id: 8, nombre: 'Máscara de pestañas' }
+        { id: 1, nombre: 'Base' }, { id: 2, nombre: 'Labial' }, { id: 3, nombre: 'Rubor' },
+        { id: 4, nombre: 'Sombra' }, { id: 5, nombre: 'Corrector' }, { id: 6, nombre: 'Contorno' },
+        { id: 7, nombre: 'Iluminador' }, { id: 8, nombre: 'Máscara de pestañas' }
     ];
     const sel = document.getElementById('prod-categoria');
     sel.innerHTML = '<option value="">Selecciona categoría</option>';
     categorias.forEach(c => {
         const o = document.createElement('option');
-        o.value = c.id;
-        o.textContent = c.nombre;
-        sel.appendChild(o);
+        o.value = c.id; o.textContent = c.nombre; sel.appendChild(o);
     });
 }
 
@@ -223,65 +247,68 @@ document.getElementById('btn-guardar-producto').addEventListener('click', async 
 });
 
 async function cargarDashboard() {
-
     const respuesta = await fetch('/productos');
     const productos = await respuesta.json();
-
-    document.getElementById('total-productos').textContent =
-        productos.length;
-
+    document.getElementById('total-productos').textContent = productos.length;
     const ctx = document.getElementById('graficaProductos');
-
     new Chart(ctx, {
         type: 'bar',
-        data: {
-            labels: ['Productos'],
-            datasets: [{
-                label: 'Cantidad',
-                data: [productos.length]
-            }]
-        }
+        data: { labels: ['Productos'], datasets: [{ label: 'Cantidad', data: [productos.length] }] }
     });
 }
-
 cargarDashboard();
 
-async function eliminarProducto(id) {
-
-    const confirmar = confirm(
-        "¿Deseas eliminar este producto?"
-    );
-
-    if (!confirmar) return;
-
+async function desactivarProducto(id) {
+    if (!confirm("¿Deseas desactivar este producto?")) return;
     try {
-
-        const respuesta = await fetch(
-            `/productos/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-        if (respuesta.ok) {
-
-            alert("Producto eliminado");
-
-            cargarProductos();
-
-        } else {
-
-            alert("Error al eliminar");
-
-        }
-
-    } catch(error) {
-
-        alert("Error de conexión");
-
-    }
+        const res = await fetch(`/productos/${id}/estado?estado=inactivo`, { method: 'PUT' });
+        const data = await res.json();
+        if (res.ok) { alert("✅ Producto desactivado"); cargarProductos(); }
+        else { alert("❌ " + (data.detail || "Error al desactivar")); }
+    } catch(e) { alert("❌ Error de conexión"); }
 }
 
+function abrirModalActualizar(id, nombre, marca, tipoPielId, categoriaId) {
+    document.getElementById('act-id').value = id;
+    document.getElementById('act-nombre').value = nombre;
+    document.getElementById('act-marca').value = marca;
+    document.getElementById('act-tipo').value = tipoPielId;
+    document.getElementById('act-categoria').value = categoriaId;
+    document.getElementById('msg-actualizar').textContent = '';
+    document.getElementById('modal-actualizar-overlay').classList.add('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btn-cerrar-actualizar').addEventListener('click', () => {
+        document.getElementById('modal-actualizar-overlay').classList.remove('open');
+    });
+    document.getElementById('modal-actualizar-overlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal-actualizar-overlay'))
+            document.getElementById('modal-actualizar-overlay').classList.remove('open');
+    });
+    document.getElementById('btn-guardar-actualizar').addEventListener('click', async () => {
+        const id = document.getElementById('act-id').value;
+        const nombre = document.getElementById('act-nombre').value.trim();
+        const marca = document.getElementById('act-marca').value.trim();
+        const tipo = document.getElementById('act-tipo').value;
+        const cat = document.getElementById('act-categoria').value;
+        const msg = document.getElementById('msg-actualizar');
+        if (!nombre || !marca || !tipo || !cat) { msg.className='msg-err'; msg.textContent='⚠️ Completa todos los campos.'; return; }
+        try {
+            const res = await fetch(`/productos/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({nombre, marca, tipo_piel_id: parseInt(tipo), categoria_id: parseInt(cat)})
+            });
+            const data = await res.json();
+            if (res.ok) {
+                msg.className='msg-ok'; msg.textContent='✅ Producto actualizado';
+                setTimeout(() => { document.getElementById('modal-actualizar-overlay').classList.remove('open'); cargarProductos(); }, 1200);
+            } else { msg.className='msg-err'; msg.textContent='❌ ' + (data.detail || 'Error al actualizar'); }
+        } catch(e) { msg.className='msg-err'; msg.textContent='❌ Error de conexión'; }
+    });
+});
 </script>
+
 </body>
 </html>
