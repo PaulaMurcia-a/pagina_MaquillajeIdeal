@@ -197,20 +197,16 @@ Producto --> TipoPiel
 
 ---
 
-##  Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ```mermaid
-Usuario
-   ↓
-Frontend (HTML, CSS, JS)
-   ↓
-Backend (FastAPI)
-   ↓
-Service
-   ↓
-Database
-   ↓
-Neon PostgreSQL
+flowchart TD
+
+A[Usuario] --> B[Frontend<br>HTML, CSS, JS]
+B --> C[Backend<br>FastAPI]
+C --> D[Service.py]
+D --> E[Database.py]
+E --> F[(Neon PostgreSQL)]
 ```
 
 ---
